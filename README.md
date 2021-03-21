@@ -94,6 +94,11 @@ services:
   * HTTPs VTO support fixed
 
 
+* 2021-Mar-21
+  * Fix script exiting when MQTT down upon service start
+  
+  * Identify client as "VTO2MQTT" when connecting to MQQT Broker
+
 
 
 ## Credits
