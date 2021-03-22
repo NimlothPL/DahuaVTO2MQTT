@@ -122,11 +122,11 @@ class DahuaVTOClient(asyncio.Protocol):
         self.mqtt_client.on_message = self.on_mqtt_message
         self.mqtt_client.on_disconnect = self.on_mqtt_disconnect
 
-        try:
-            self.mqtt_client.connect(self.mqtt_broker_host, int(self.mqtt_broker_port), 60)
-        except:
-            _LOGGER.info(f"MQTT Broker connection failed")
-
+#        try:
+#            self.mqtt_client.connect(self.mqtt_broker_host, int(self.mqtt_broker_port), 60)
+#        except:
+#            _LOGGER.info(f"MQTT Broker connection failed")
+        self.mqtt_client.connect(self.mqtt_broker_host, int(self.mqtt_broker_port), 60)
         self.mqtt_client.loop_start()
 
     @staticmethod
