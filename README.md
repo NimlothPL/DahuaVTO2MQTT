@@ -94,10 +94,6 @@ services:
   * HTTPs VTO support fixed
 
 
-* 2021-Mar-21
-  * Identify client as "VTO2MQTT" when connecting to MQTT Broker
-
-
 
 ## Credits
 All credits goes to <a href="https://github.com/riogrande75">@riogrande75</a> who wrote that complicated integration
