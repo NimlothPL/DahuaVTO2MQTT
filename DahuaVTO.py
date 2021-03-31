@@ -87,6 +87,8 @@ class DahuaVTOClient(asyncio.Protocol):
     messages: []
     mqtt_client: mqtt.Client
     dahua_details: {}
+    buffer = bytearray(256 * 1024)
+    buffer_size = 0
 
     def __init__(self):
         self.dahua_details = {}
@@ -126,7 +128,8 @@ class DahuaVTOClient(asyncio.Protocol):
             self.mqtt_client.connect(self.mqtt_broker_host, int(self.mqtt_broker_port), 60)
         except:
             _LOGGER.info(f"MQTT Broker connection failed")
-#        self.mqtt_client.connect(self.mqtt_broker_host, int(self.mqtt_broker_port), 60)
+
+        #self.mqtt_client.connect(self.mqtt_broker_host, int(self.mqtt_broker_port), 60)
         self.mqtt_client.loop_start()
 
     @staticmethod
@@ -190,8 +193,18 @@ class DahuaVTOClient(asyncio.Protocol):
             _LOGGER.error(f"Failed to handle message, error: {ex}, Line: {exc_tb.tb_lineno}")
 
     def data_received(self, data):
+        _LOGGER.debug(f"Buffer Received, bytes: {len(data)}, Message {data}")
+        
+        self.buffer[self.buffer_size:len(data)] = data   
+        self.buffer_size+=len(data)
+        
+        _LOGGER.debug(f"Buffer Content, bytes: {self.buffer_size}, Message {self.buffer[:self.buffer_size]}")
+
+        if self.buffer_size > 2200:
+            self.buffer_size = 0
+        
         try:
-            message = self.parse_response(data)
+            message = self.parse_response(self.buffer[:self.buffer_size])
             _LOGGER.debug(f"Data received: {message}")
 
             message_id = message.get("id")
@@ -211,6 +224,8 @@ class DahuaVTOClient(asyncio.Protocol):
 
                 if method == "client.notifyEventStream":
                     self.handle_notify_event_stream(params)
+
+            self.buffer_size = 0
 
         except Exception as ex:
             exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -396,7 +411,6 @@ class DahuaVTOManager:
                 _LOGGER.error(f"Connection failed will try to connect in 30 seconds, error: {ex}, Line: {line}")
 
                 sleep(30)
-
 
 manager = DahuaVTOManager()
 manager.initialize()
