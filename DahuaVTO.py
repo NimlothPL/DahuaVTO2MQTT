@@ -383,7 +383,6 @@ class DahuaVTOClient(asyncio.Protocol):
 
         return random_hash
 
-
 class DahuaVTOManager:
     def __init__(self):
         self._host = os.environ.get('DAHUA_VTO_HOST')
